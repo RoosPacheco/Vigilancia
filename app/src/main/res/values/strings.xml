@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Vigilante</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="email">Correo electrónico</string>
+    <string name="passowrd">Contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="show_pwd">Ver contraseña</string>
+    <string name="hide_pwd">Ocultar contraseña</string>
+    <string name="forgot">¿Olvidaste tu contraseña?</string>
+    <string name="closebutton">Close Button for Activity</string>
+    <string name="newUser">¿No eres miembro todavía? Registrate aquí</string>
+    <string name="fullName">Nombre completo</string>
+    <string name="mobileNumber">Número de celular</string>
+    <string name="location">Localización</string>
+    <string name="confirmPassword">Confirmar contraseña</string>
+    <string name="terms_conditions">Al hacer clic en Registrarse, usted acepta todos los Términos y Condiciones.</string>
+    <string name="signUp">REGÍSTRATE</string>
+    <string name="already_user">¿Ya tienes cuenta? Entre aquí.</string>
+    <string name="registered_emailid">Por favor ingrese su correo electrónico registrado a continuación:</string>
+    <string name="submit">Enviar</string>
+    <string name="back">Regresar</string>
+</resources>
