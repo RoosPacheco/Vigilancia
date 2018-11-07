@@ -180,6 +180,8 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 		else {
 			Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT)
 					.show();
+
+
 			Intent intent = new Intent(getContext(), Visitante.class);
 			startActivity(intent);
 		}

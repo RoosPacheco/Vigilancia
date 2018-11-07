@@ -15,6 +15,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.BufferedWriter;
@@ -70,7 +71,20 @@ public class Visitante extends AppCompatActivity {
                 btm.compress(Bitmap.CompressFormat.JPEG, 100, outs);
                 String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);
 
-                new Dowloand().execute(encode);
+                EditText nameV = (EditText) findViewById(R.id.fullNameVisit);
+                EditText nameH = (EditText) findViewById(R.id.fullNameHabit);
+                EditText moviH = (EditText) findViewById(R.id.mobileNumber);
+                EditText calle = (EditText) findViewById(R.id.calle);
+                EditText num   = (EditText) findViewById(R.id.numero);
+
+                String nameVisit = String.valueOf(nameV.getText());
+                String nameHabit = String.valueOf(nameH.getText());
+                String mobiHabit = String.valueOf(moviH.getText());
+                String calleHabi = String.valueOf(calle.getText());
+                String numHabi   = String.valueOf(num.getText());
+
+
+                new Dowloand().execute(encode,nameVisit, nameHabit, mobiHabit, calleHabi, numHabi );
 
             }
         });
@@ -84,42 +98,55 @@ public class Visitante extends AppCompatActivity {
             ImageView imageView = findViewById(R.id.imageVisit);
             imageView.setImageBitmap(btm);
 
-
-
-           /* Bundle bundle = data.getExtras();
-            Bitmap bmp = (Bitmap) bundle.get("data");
-            //Proceso para convertir el Bitmap a una cadena string
-            ByteArrayOutputStream outs = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, outs);
-            String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);*/
-
-            //new Dowloand().execute(encode);
-
-
         }
 
     }
 
     class Dowloand extends AsyncTask<String, Void, Void> {
         @Override
-        protected Void doInBackground(String... image) {// método que no tiene acceso a la parte visual
+        protected Void doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
             HttpURLConnection connection;
 
-            String imagen = image[0];
-            //ip, hice una carpeta llamada imagenes
-            String direccion = direction+"getimage.php";
+            String imagen       = parameter[0];
+
+            String nameVisit   = parameter[1];
+            String nameHabit   = parameter[2];
+            String mobiHabit   = parameter[3];
+            String calleHabi   = parameter[4];
+            String numHabit    = parameter[5];
+
+            String direccion = direction+"getInfoVisitante.php";
+
+            Log.d("paramenters", nameVisit+"-"+nameHabit+"-"+mobiHabit+"-"+calleHabi+"-"+numHabit);
+
+
+
             try {
                 Log.d("umagen string", URLEncoder.encode("image=" + imagen, "UTF-8"));
+
+
 
                 connection = (HttpURLConnection) new URL(direccion).openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoInput(true);
 
+                /*********/
+
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("image",  URLEncoder.encode(imagen, "UTF-8"))
+                        .appendQueryParameter("nameVisit", nameVisit)
+                        .appendQueryParameter("nameHabit", nameHabit)
+                        .appendQueryParameter("mobiHabit", mobiHabit)
+                        .appendQueryParameter("calleHabi", calleHabi)
+                        .appendQueryParameter("numHabit", numHabit);
+                String query = builder.build().getEncodedQuery();
+
+
+
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                //writer.write(imagen);
-                writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
+                writer.write(query);
                 writer.flush();
                 writer.close();
                 outputStream.close();
@@ -127,7 +154,7 @@ public class Visitante extends AppCompatActivity {
                 connection.connect();
                 InputStream is = (InputStream) connection.getContent();
                 byte [] b = new byte[100000];//buffer
-                Integer numBytes = is.read(b);// numero de bites que leyó
+                Integer numBytes = is.read(b);// numero de bites que lleyó
                 //convertimos ese num de bites a una cadena
                 String res = new String(b, 0,  numBytes, "utf-8");
                 Log.d("res", res);
