@@ -20,4 +20,13 @@
     <string name="registered_emailid">Por favor ingrese su correo electrónico registrado a continuación:</string>
     <string name="submit">Enviar</string>
     <string name="back">Regresar</string>
+
+
+    <string name="avisar">Avisar</string>
+    <string name="datosV">Datos del Visitante</string>
+    <string name="why">¿A quién visita?</string>
+    <string name="fullNameHabit">Nombre completo de Habitante</string>
+    <string name="calle">Calle</string>
+    <string name="num">Número</string>
+
 </resources>

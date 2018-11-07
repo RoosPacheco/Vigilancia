@@ -1,6 +1,7 @@
 package com.example.cosmi.vigilante;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
@@ -130,9 +131,12 @@ public class SignUp_Fragment extends Fragment implements OnClickListener {
 					"Please select Terms and Conditions.");
 
 		// Else do signup or do your stuff
-		else
+		else {
 			Toast.makeText(getActivity(), "Do SignUp.", Toast.LENGTH_SHORT)
 					.show();
+
+
+		}
 
 	}
 }
