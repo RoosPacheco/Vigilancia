@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputType;
@@ -25,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -178,13 +181,33 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 					"Your Email Id is Invalid.");
 		// Else do login and do your stuff
 		else {
-			Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT)
-					.show();
-
+			//Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
+			conecta();
 
 			Intent intent = new Intent(getContext(), Visitante.class);
 			startActivity(intent);
+
+
+
 		}
 
+	}
+
+	public Connection conecta(){
+		Connection cnn= null;
+
+		try{
+			StrictMode.ThreadPolicy politica = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+			StrictMode.setThreadPolicy(politica);
+
+			Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
+			cnn = DriverManager.getConnection("jdbc:jtds:sqlserver://sql157.main-hosting.eu;databaseName=u303091761_vig;user=u303091761_root;password=root146749;");
+
+
+		}
+		catch (Exception e){
+			Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
+		}
+		return cnn;
 	}
 }
