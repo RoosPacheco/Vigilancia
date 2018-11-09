@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -57,6 +58,7 @@ public class Visitante extends AppCompatActivity {
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                     Log.d("dire_picture",dir.getAbsolutePath());
                     startActivityForResult(intent, 123);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -68,29 +70,38 @@ public class Visitante extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                //Proceso para convertir el Bitmap a una cadena string
-                ByteArrayOutputStream outs = new ByteArrayOutputStream();
-                btm.compress(Bitmap.CompressFormat.JPEG, 100, outs);
-                String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);
 
-                EditText nameV = (EditText) findViewById(R.id.fullNameVisit);
-                EditText lastnameV = (EditText) findViewById(R.id.lastNameVisit);
-                EditText nameH = (EditText) findViewById(R.id.fullNameHabit);
-                EditText lastnameH = (EditText) findViewById(R.id.lastNameHabit);
-                EditText moviH = (EditText) findViewById(R.id.mobileNumber);
-                EditText calle = (EditText) findViewById(R.id.calle);
-                EditText num   = (EditText) findViewById(R.id.numero);
+                if(btm != null) {
+                    //Proceso para convertir el Bitmap a una cadena string
+                    ByteArrayOutputStream outs = new ByteArrayOutputStream();
+                    btm.compress(Bitmap.CompressFormat.JPEG, 100, outs);
+                    String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);
 
-                String nameVisit = (String.valueOf(nameV.getText())).toUpperCase();
-                String lastnameVisit = (String.valueOf(lastnameV.getText())).toUpperCase();
-                String nameHabit = (String.valueOf(nameH.getText())).toUpperCase();
-                String lastnameHabit = (String.valueOf(lastnameH.getText())).toUpperCase();
-                String mobiHabit = String.valueOf(moviH.getText());
-                String calleHabi = (String.valueOf(calle.getText())).toUpperCase();
-                String numHabi   = String.valueOf(num.getText());
+                    EditText nameV = (EditText) findViewById(R.id.fullNameVisit);
+                    EditText lastnameV = (EditText) findViewById(R.id.lastNameVisit);
+                    EditText nameH = (EditText) findViewById(R.id.fullNameHabit);
+                    EditText lastnameH = (EditText) findViewById(R.id.lastNameHabit);
+                    EditText moviH = (EditText) findViewById(R.id.mobileNumber);
+                    EditText calle = (EditText) findViewById(R.id.calle);
+                    EditText num   = (EditText) findViewById(R.id.numero);
+
+                    String nameVisit = (String.valueOf(nameV.getText())).toUpperCase();
+                    String lastnameVisit = (String.valueOf(lastnameV.getText())).toUpperCase();
+                    String nameHabit = (String.valueOf(nameH.getText())).toUpperCase();
+                    String lastnameHabit = (String.valueOf(lastnameH.getText())).toUpperCase();
+                    String mobiHabit = String.valueOf(moviH.getText());
+                    String calleHabi = (String.valueOf(calle.getText())).toUpperCase();
+                    String numHabi   = String.valueOf(num.getText());
+
+                    new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
+                    
+
+                }
+                    else{
+                    Toast.makeText(getApplicationContext(),"Tome la foto", Toast.LENGTH_LONG).show();
+                }
 
 
-                new DowloandInfo().execute(encode,nameVisit,lastnameVisit, nameHabit,lastnameHabit, mobiHabit, calleHabi, numHabi );
 
 
 
@@ -125,9 +136,7 @@ public class Visitante extends AppCompatActivity {
             String calleHabi        = parameter[6];
             String numHabit         = parameter[7];
 
-            String direccion = direction+"getInfoVisitante.php";
-
-            Log.d("paramenters", nameVisit+"-"+nameHabit+"-"+mobiHabit+"-"+calleHabi+"-"+numHabit);
+            String direccion = direction+"Visitantes/getInfoVisitante.php";
 
             String res = null;
 
@@ -141,19 +150,21 @@ public class Visitante extends AppCompatActivity {
                 connection.setDoInput(true);
 
                 /*********/
+                //String imagecode = URLEncoder.encode(imagen, "UTF-8");
 
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("image",  URLEncoder.encode(imagen, "UTF-8"))
+                        //.appendQueryParameter("image", imagen )
                         .appendQueryParameter("nameVisit", nameVisit)
                         .appendQueryParameter("lastnameVisit", lastnameVisit)
                         .appendQueryParameter("nameHabit", nameHabit)
                         .appendQueryParameter("lastnameHabit", lastnameHabit)
                         .appendQueryParameter("mobiHabit", mobiHabit)
                         .appendQueryParameter("calleHabi", calleHabi)
-                        .appendQueryParameter("numHabit", numHabit);
+                        .appendQueryParameter("numHabit", numHabit)
+                        .appendQueryParameter("image", URLEncoder.encode(imagen, "UTF-8") );
                 String query = builder.build().getEncodedQuery();
 
-
+                Log.d("query", query);
 
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
@@ -170,15 +181,7 @@ public class Visitante extends AppCompatActivity {
                 //convertimos ese num de bites a una cadena
                 res = new String(b, 0,  numBytes, "utf-8");
 
-
                 Log.d("res", res);
-
-                if(res.equals("Connectedsuccessfully")){
-                    ban = true;
-                }
-
-
-
 
 
             } catch (IOException e) {
@@ -190,8 +193,8 @@ public class Visitante extends AppCompatActivity {
         @Override
         protected void onPostExecute(String res) {
             super.onPostExecute(res);
-
             if (!"NO EXISTE".equals(res)){
+                Log.e("onPostExecute", res);
                 //mandamos la notificación
                 new notificar().execute(res);
 
@@ -216,6 +219,7 @@ public class Visitante extends AppCompatActivity {
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
+                writer.write("token=" + TOKEN);
                 writer.flush();
                 writer.close();
                 outputStream.close();

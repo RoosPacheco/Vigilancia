@@ -1,0 +1,64 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true"
+    android:overScrollMode="never"
+    android:scrollbars="none" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_color" >
+
+        <ImageView
+            android:id="@+id/close_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="top|end"
+            android:layout_margin="4dp"
+            android:contentDescription="@string/closebutton"
+            android:padding="5dp"
+            android:src="@drawable/ic_cerrar" />
+
+        <FrameLayout
+            android:id="@+id/frameContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/close_activity" >
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:padding="20dp" >
+
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="25dp"
+                    android:text="Esperando Respuesta"
+                    android:textColor="@color/white_greyish"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/loading_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminateTintMode="src_atop"
+                    android:indeterminateTint="@color/white"
+                    android:layout_gravity="center" />
+
+
+
+            </LinearLayout>
+
+        </FrameLayout>
+    </RelativeLayout>
+
+</ScrollView>
