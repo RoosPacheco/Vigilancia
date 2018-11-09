@@ -230,7 +230,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 		@Override
 		protected void onPostExecute(Boolean resultado) {
 			if(resultado) {
-				Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getContext(), "Conectado.", Toast.LENGTH_SHORT).show();
 				Log.d("LOG:", "conectado");
 			}else {
 				Toast.makeText(getContext(), "No conectado", Toast.LENGTH_SHORT).show();
