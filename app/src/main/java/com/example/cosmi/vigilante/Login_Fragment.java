@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.text.InputType;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -130,7 +132,11 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.loginBtn:
-			checkValidation();
+
+			Conectar conectar = new Conectar();
+			conectar.execute();
+
+			//checkValidation();
 			break;
 
 		case R.id.forgot_password:
@@ -181,9 +187,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 					"Your Email Id is Invalid.");
 		// Else do login and do your stuff
 		else {
-			//Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
-			conecta();
-
+			Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(getContext(), Visitante.class);
 			startActivity(intent);
 
@@ -193,21 +197,45 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 
 	}
 
-	public Connection conecta(){
-		Connection cnn= null;
-
-		try{
-			StrictMode.ThreadPolicy politica = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-			StrictMode.setThreadPolicy(politica);
-
-			Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
-			cnn = DriverManager.getConnection("jdbc:jtds:sqlserver://sql157.main-hosting.eu;databaseName=u303091761_vig;user=u303091761_root;password=root146749;");
 
 
+
+
+
+	private class Conectar extends AsyncTask<Void, Integer, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			try {
+				//String url = "jdbc:jtds:sqlserver://ip_servidor;USER=xxx;PASSWORD=xxx";
+			//	Log.i("url", url);
+				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+				StrictMode.setThreadPolicy(policy);
+				Class.forName( "net.sourceforge.jtds.jdbc.Driver").newInstance();
+				Connection conn = DriverManager.getConnection("jdbc:jtds:sqlserver://10.74.58.62:3306","Jesus123","123456789");
+				if (conn == null)
+				{
+					return false;
+				}
+			} catch (NoClassDefFoundError e){
+				Log.e("Definicion de clase",e.getMessage());
+			} catch (ClassNotFoundException e) {
+				Log.e("Clase no encontrada",e.getMessage());
+			} catch (Exception e) {
+				Log.e("ERROR Conexion:",e.getMessage());
+				return false;
+			}
+			return true;
 		}
-		catch (Exception e){
-			Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
+
+		@Override
+		protected void onPostExecute(Boolean resultado) {
+			if(resultado) {
+				Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
+				Log.d("LOG:", "conectado");
+			}else {
+				Toast.makeText(getContext(), "No conectado", Toast.LENGTH_SHORT).show();
+				Log.d("LOG:", "no conectado");
+			}
 		}
-		return cnn;
 	}
 }
