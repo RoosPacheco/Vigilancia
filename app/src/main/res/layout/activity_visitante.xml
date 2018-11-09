@@ -64,7 +64,28 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:hint="@string/fullName"
-                    android:inputType="textCapWords"
+                    android:inputType="textCapCharacters"
+                    android:padding="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1px"
+                    android:background="@color/white_greyish" />
+                <EditText
+                    android:id="@+id/lastNameVisit"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/ic_person_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:hint="@string/lastName"
+                    android:inputType="textCapCharacters"
                     android:padding="10dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
@@ -94,7 +115,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:hint="@string/fullNameHabit"
-                    android:inputType="textCapWords"
+                    android:inputType="textCapCharacters"
                     android:padding="10dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
@@ -106,6 +127,27 @@
                     android:layout_height="1px"
                     android:background="@color/white_greyish" />
 
+                <EditText
+                    android:id="@+id/lastNameHabit"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/transparent"
+                    android:drawableLeft="@drawable/ic_person_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:hint="@string/lastNameHabit"
+                    android:inputType="textCapCharacters"
+                    android:padding="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1px"
+                    android:background="@color/white_greyish" />
 
 
                 <EditText
@@ -139,7 +181,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:hint="@string/calle"
-                    android:inputType="textCapWords"
+                    android:inputType="textCapCharacters"
                     android:padding="10dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
@@ -161,7 +203,7 @@
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:hint="@string/num"
-                    android:inputType="textCapWords"
+                    android:inputType="number"
                     android:padding="10dp"
                     android:singleLine="true"
                     android:textColor="@color/white"

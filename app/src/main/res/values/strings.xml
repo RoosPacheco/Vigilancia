@@ -10,7 +10,8 @@
     <string name="forgot">¿Olvidaste tu contraseña?</string>
     <string name="closebutton">Close Button for Activity</string>
     <string name="newUser">¿No eres miembro todavía? Registrate aquí</string>
-    <string name="fullName">Nombre completo</string>
+    <string name="fullName">Nombre (s)</string>
+    <string name="lastName">Apellidos</string>
     <string name="mobileNumber">Número de celular</string>
     <string name="location">Localización</string>
     <string name="confirmPassword">Confirmar contraseña</string>
@@ -25,7 +26,8 @@
     <string name="avisar">Avisar</string>
     <string name="datosV">Datos del Visitante</string>
     <string name="why">¿A quién visita?</string>
-    <string name="fullNameHabit">Nombre completo de Habitante</string>
+    <string name="fullNameHabit">Nombre(s) de Habitante</string>
+    <string name="lastNameHabit">Apellidos</string>
     <string name="calle">Calle</string>
     <string name="num">Número</string>
 

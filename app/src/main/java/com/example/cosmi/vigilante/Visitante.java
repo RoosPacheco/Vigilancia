@@ -35,6 +35,8 @@ public class Visitante extends AppCompatActivity {
     File file;
     private Bitmap btm;
 
+    private Boolean ban = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,19 +74,25 @@ public class Visitante extends AppCompatActivity {
                 String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);
 
                 EditText nameV = (EditText) findViewById(R.id.fullNameVisit);
+                EditText lastnameV = (EditText) findViewById(R.id.lastNameVisit);
                 EditText nameH = (EditText) findViewById(R.id.fullNameHabit);
+                EditText lastnameH = (EditText) findViewById(R.id.lastNameHabit);
                 EditText moviH = (EditText) findViewById(R.id.mobileNumber);
                 EditText calle = (EditText) findViewById(R.id.calle);
                 EditText num   = (EditText) findViewById(R.id.numero);
 
-                String nameVisit = String.valueOf(nameV.getText());
-                String nameHabit = String.valueOf(nameH.getText());
+                String nameVisit = (String.valueOf(nameV.getText())).toUpperCase();
+                String lastnameVisit = (String.valueOf(lastnameV.getText())).toUpperCase();
+                String nameHabit = (String.valueOf(nameH.getText())).toUpperCase();
+                String lastnameHabit = (String.valueOf(lastnameH.getText())).toUpperCase();
                 String mobiHabit = String.valueOf(moviH.getText());
-                String calleHabi = String.valueOf(calle.getText());
+                String calleHabi = (String.valueOf(calle.getText())).toUpperCase();
                 String numHabi   = String.valueOf(num.getText());
 
 
-                new Dowloand().execute(encode,nameVisit, nameHabit, mobiHabit, calleHabi, numHabi );
+                new DowloandInfo().execute(encode,nameVisit,lastnameVisit, nameHabit,lastnameHabit, mobiHabit, calleHabi, numHabi );
+
+
 
             }
         });
@@ -102,24 +110,26 @@ public class Visitante extends AppCompatActivity {
 
     }
 
-    class Dowloand extends AsyncTask<String, Void, Void> {
+    class DowloandInfo extends AsyncTask<String, Void, String> {
         @Override
-        protected Void doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
+        protected String doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
             HttpURLConnection connection;
 
-            String imagen       = parameter[0];
+            String imagen           = parameter[0];
 
-            String nameVisit   = parameter[1];
-            String nameHabit   = parameter[2];
-            String mobiHabit   = parameter[3];
-            String calleHabi   = parameter[4];
-            String numHabit    = parameter[5];
+            String nameVisit        = parameter[1];
+            String lastnameVisit    = parameter[2];
+            String nameHabit        = parameter[3];
+            String lastnameHabit    = parameter[4];
+            String mobiHabit        = parameter[5];
+            String calleHabi        = parameter[6];
+            String numHabit         = parameter[7];
 
             String direccion = direction+"getInfoVisitante.php";
 
             Log.d("paramenters", nameVisit+"-"+nameHabit+"-"+mobiHabit+"-"+calleHabi+"-"+numHabit);
 
-
+            String res = null;
 
             try {
                 Log.d("umagen string", URLEncoder.encode("image=" + imagen, "UTF-8"));
@@ -135,7 +145,9 @@ public class Visitante extends AppCompatActivity {
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("image",  URLEncoder.encode(imagen, "UTF-8"))
                         .appendQueryParameter("nameVisit", nameVisit)
+                        .appendQueryParameter("lastnameVisit", lastnameVisit)
                         .appendQueryParameter("nameHabit", nameHabit)
+                        .appendQueryParameter("lastnameHabit", lastnameHabit)
                         .appendQueryParameter("mobiHabit", mobiHabit)
                         .appendQueryParameter("calleHabi", calleHabi)
                         .appendQueryParameter("numHabit", numHabit);
@@ -156,10 +168,66 @@ public class Visitante extends AppCompatActivity {
                 byte [] b = new byte[100000];//buffer
                 Integer numBytes = is.read(b);// numero de bites que lleyó
                 //convertimos ese num de bites a una cadena
-                String res = new String(b, 0,  numBytes, "utf-8");
+                res = new String(b, 0,  numBytes, "utf-8");
+
+
                 Log.d("res", res);
 
+                if(res.equals("Connectedsuccessfully")){
+                    ban = true;
+                }
 
+
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return res;
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            super.onPostExecute(res);
+
+            if (!"NO EXISTE".equals(res)){
+                //mandamos la notificación
+                new notificar().execute(res);
+
+            }
+
+        }
+    }
+
+    class notificar extends AsyncTask <String, Void, Void>{
+        @Override
+        protected Void doInBackground(String... token) {// método que no tiene acceso a la parte visual
+            HttpURLConnection connection;
+            String TOKEN           = token[0];
+
+            String direccion = direction+"notificar.php";
+            try {
+
+                connection = (HttpURLConnection) new URL(direccion).openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoInput(true);
+
+                OutputStream outputStream = connection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                writer.flush();
+                writer.close();
+                outputStream.close();
+
+                connection.connect();
+                InputStream is = (InputStream) connection.getContent();
+
+                byte [] b = new byte[100000];//buffer
+                Integer numBytes = is.read(b);// numero de bites que leyó
+                //convertimos ese num de bites a una cadena
+                String res = new String(b, 0,  numBytes, "utf-8");
+                Log.d("respuestaNotifi", res);
 
 
 
@@ -169,6 +237,6 @@ public class Visitante extends AppCompatActivity {
             return null;
         }
 
-
     }
+
 }
