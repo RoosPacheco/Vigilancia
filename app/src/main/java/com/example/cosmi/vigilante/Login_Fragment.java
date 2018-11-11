@@ -33,6 +33,7 @@ import java.sql.DriverManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 public class Login_Fragment extends Fragment implements OnClickListener {
 	private static View view;
 
@@ -210,8 +211,8 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 			//	Log.i("url", url);
 				StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 				StrictMode.setThreadPolicy(policy);
-				Class.forName( "net.sourceforge.jtds.jdbc.Driver").newInstance();
-				Connection conn = DriverManager.getConnection("jdbc:jtds:sqlserver://10.74.58.62:3306","Jesus123","123456789");
+                Class.forName("com.mysql.jdbc.Driver").newInstance();
+				Connection conn = DriverManager.getConnection("jdbc:jtds:sqlserver://192.168.1.143:3306","Jesus123","123456789");
 				if (conn == null)
 				{
 					return false;
