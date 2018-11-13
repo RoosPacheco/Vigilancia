@@ -1,14 +1,18 @@
 package com.example.cosmi.vigilante;
 
 import android.app.Activity;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -47,21 +51,31 @@ public class Visitante extends AppCompatActivity {
         picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                /**** Foto en alta resoluion****/
+                File dir = getExternalFilesDir(Environment.DIRECTORY_DCIM);
                 //crear un archivo
-                try {
-                    File dir = getExternalFilesDir(Environment.DIRECTORY_DCIM);
-                    Log.d("1",dir.getAbsolutePath());
-                    file = File.createTempFile("image", ".jpg", dir);
+                file = new File(dir,"pic.jpg");
+                Intent intent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//version android 8
+                    Uri uri = FileProvider.getUriForFile(getApplicationContext(),"com.example.pegaz.camara",file);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    Log.d("directorio",dir.getAbsolutePath());
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                     Log.d("dire_picture",dir.getAbsolutePath());
-                    startActivityForResult(intent, 123);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                startActivityForResult(intent, 123);
+
+                /***FOto baja resolucion*/
+               /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 123);*/
+
             }
         });
 
@@ -94,7 +108,8 @@ public class Visitante extends AppCompatActivity {
                     String numHabi   = String.valueOf(num.getText());
 
                     new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
-                    
+                    Intent intent = new Intent(getApplicationContext(),RespuestaHabitante.class);
+                    startActivity(intent);
 
                 }
                     else{
@@ -112,10 +127,18 @@ public class Visitante extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
+            //Obtener el Bitmap de a captura alta resolucion
             btm = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            /*
+            //Obtenemos el Bitmap de la imagen de baja resolución
+            Bundle bundle = data.getExtras();
+            btm = (Bitmap) bundle.get("data");
+            */
 
             ImageView imageView = findViewById(R.id.imageVisit);
             imageView.setImageBitmap(btm);
+
 
         }
 
@@ -137,39 +160,27 @@ public class Visitante extends AppCompatActivity {
             String numHabit         = parameter[7];
 
             String direccion = direction+"Visitantes/getInfoVisitante.php";
+            //String direccion = direction+"getimage.php";
 
             String res = null;
 
             try {
-                Log.d("umagen string", URLEncoder.encode("image=" + imagen, "UTF-8"));
 
-
+                Log.d("imagenstring","image="+URLEncoder.encode(imagen, "UTF-8"));
 
                 connection = (HttpURLConnection) new URL(direccion).openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoInput(true);
 
                 /*********/
-                //String imagecode = URLEncoder.encode(imagen, "UTF-8");
 
-                Uri.Builder builder = new Uri.Builder()
-                        //.appendQueryParameter("image", imagen )
-                        .appendQueryParameter("nameVisit", nameVisit)
-                        .appendQueryParameter("lastnameVisit", lastnameVisit)
-                        .appendQueryParameter("nameHabit", nameHabit)
-                        .appendQueryParameter("lastnameHabit", lastnameHabit)
-                        .appendQueryParameter("mobiHabit", mobiHabit)
-                        .appendQueryParameter("calleHabi", calleHabi)
-                        .appendQueryParameter("numHabit", numHabit)
-                        .appendQueryParameter("image", URLEncoder.encode(imagen, "UTF-8") );
-                String query = builder.build().getEncodedQuery();
-
-                Log.d("query", query);
+                String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
 
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write(query);
+                writer.write(params);
+                //writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
                 writer.flush();
                 writer.close();
                 outputStream.close();
@@ -232,8 +243,6 @@ public class Visitante extends AppCompatActivity {
                 //convertimos ese num de bites a una cadena
                 String res = new String(b, 0,  numBytes, "utf-8");
                 Log.d("respuestaNotifi", res);
-
-
 
             } catch (IOException e) {
                 e.printStackTrace();

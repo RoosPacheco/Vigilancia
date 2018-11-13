@@ -76,7 +76,11 @@ public class SignUp_Fragment extends Fragment implements OnClickListener {
 		case R.id.signUpBtn:
 
 			// Call checkValidation method
-			checkValidation();
+			//checkValidation();
+			Toast.makeText(getActivity(), "Do SignUp.", Toast.LENGTH_SHORT)
+					.show();
+			Intent intent = new Intent(getContext(), Visitante.class);
+			startActivity(intent);
 			break;
 
 		case R.id.already_user:
