@@ -1,9 +1,11 @@
 package com.example.cosmi.vigilante;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -12,6 +14,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +24,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -53,24 +58,22 @@ public class Visitante extends AppCompatActivity {
             public void onClick(View view) {
 
                 /**** Foto en alta resoluion****/
-                File dir = getExternalFilesDir(Environment.DIRECTORY_DCIM);
-                //crear un archivo
+
+                File dir=getExternalFilesDir(Environment.DIRECTORY_DCIM);
                 file = new File(dir,"pic.jpg");
+
                 Intent intent= new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//version android 8
-                    Uri uri = FileProvider.getUriForFile(getApplicationContext(),"com.example.pegaz.camara",file);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-
+                Uri uri = FileProvider.getUriForFile(getApplicationContext(),"com.example.cosmi.vigilante",file);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                //Log.d("1",file.getAbsolutePath());
+                if (ContextCompat.checkSelfPermission(Visitante.this, Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(),"FALTAN LOS PERMISOS", Toast.LENGTH_LONG).show();
                 }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    Log.d("directorio",dir.getAbsolutePath());
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                    Log.d("dire_picture",dir.getAbsolutePath());
-
+                else
+                {
+                    startActivityForResult(intent, 123);
                 }
-                startActivityForResult(intent, 123);
 
                 /***FOto baja resolucion*/
                /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -91,6 +94,7 @@ public class Visitante extends AppCompatActivity {
                     btm.compress(Bitmap.CompressFormat.JPEG, 100, outs);
                     String encode = Base64.encodeToString(outs.toByteArray(), Base64.DEFAULT);
 
+
                     EditText nameV = (EditText) findViewById(R.id.fullNameVisit);
                     EditText lastnameV = (EditText) findViewById(R.id.lastNameVisit);
                     EditText nameH = (EditText) findViewById(R.id.fullNameHabit);
@@ -107,18 +111,20 @@ public class Visitante extends AppCompatActivity {
                     String calleHabi = (String.valueOf(calle.getText())).toUpperCase();
                     String numHabi   = String.valueOf(num.getText());
 
-                    new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
-                    Intent intent = new Intent(getApplicationContext(),RespuestaHabitante.class);
-                    startActivity(intent);
+                    if(!"".equals(nameVisit)  && !"".equals(lastnameVisit) && !"".equals(nameHabit) && !"".equals(lastnameHabit) && !"".equals(mobiHabit) && !"".equals(calleHabi) && !"".equals(numHabi)) {
+
+                        new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
+                        Intent intent = new Intent(getApplicationContext(), RespuestaHabitante.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(),"Complete los campos", Toast.LENGTH_LONG).show();
+                    }
 
                 }
-                    else{
+                else{
                     Toast.makeText(getApplicationContext(),"Tome la foto", Toast.LENGTH_LONG).show();
                 }
-
-
-
-
 
             }
         });
@@ -176,6 +182,7 @@ public class Visitante extends AppCompatActivity {
 
                 String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
 
+                Log.d("paramts", params);
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
@@ -203,8 +210,12 @@ public class Visitante extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String res) {
-            super.onPostExecute(res);
-            if (!"NO EXISTE".equals(res)){
+            //super.onPostExecute(res);
+            if ("NO EXISTE".equals(res)){
+                new RespuestaHabitante().mostrarRespuesta();
+
+            }
+            else if (!"NO EXISTE".equals(res)){
                 Log.e("onPostExecute", res);
                 //mandamos la notificación
                 new notificar().execute(res);

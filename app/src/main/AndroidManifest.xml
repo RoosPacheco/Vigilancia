@@ -34,7 +34,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <service android:name=".MyMessage">
@@ -43,7 +43,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".RespuestaHabitante"></activity>
+        <activity android:name=".RespuestaHabitante" />
+        <activity android:name=".AvisoHabitante"></activity>
     </application>
 
 </manifest>

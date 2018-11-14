@@ -48,11 +48,25 @@
 
                 <ProgressBar
                     android:id="@+id/loading_spinner"
+                    android:visibility="visible"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:indeterminateTintMode="src_atop"
                     android:indeterminateTint="@color/white"
                     android:layout_gravity="center" />
+
+
+                <TextView
+                    android:id="@+id/respuesta"
+                    android:visibility="gone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="25dp"
+                    android:text="EL HABITANTE NO EXISTE"
+                    android:textColor="@color/white_greyish"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
 
 
 
