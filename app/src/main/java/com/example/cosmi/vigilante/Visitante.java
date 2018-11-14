@@ -114,8 +114,13 @@ public class Visitante extends AppCompatActivity {
                     if(!"".equals(nameVisit)  && !"".equals(lastnameVisit) && !"".equals(nameHabit) && !"".equals(lastnameHabit) && !"".equals(mobiHabit) && !"".equals(calleHabi) && !"".equals(numHabi)) {
 
                         new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
-                        Intent intent = new Intent(getApplicationContext(), RespuestaHabitante.class);
-                        startActivity(intent);
+                        //Intent intent = new Intent(getApplicationContext(), RespuestaHabitante.class);
+                        //startActivity(intent);
+                        view.setEnabled(false);
+                        ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
+                        if (progressBar.getVisibility() == View.GONE) {
+                            progressBar.setVisibility(View.VISIBLE);
+                        }
                     }
                     else {
                         Toast.makeText(getApplicationContext(),"Complete los campos", Toast.LENGTH_LONG).show();
@@ -183,6 +188,8 @@ public class Visitante extends AppCompatActivity {
                 String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
 
                 Log.d("paramts", params);
+
+
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
@@ -193,11 +200,16 @@ public class Visitante extends AppCompatActivity {
                 outputStream.close();
 
                 connection.connect();
-                InputStream is = (InputStream) connection.getContent();
+                InputStream is = (InputStream) connection.getContent();//error java.net.SocketException: sendto failed: EPIPE (Broken pipe)
                 byte [] b = new byte[100000];//buffer
                 Integer numBytes = is.read(b);// numero de bites que lleyó
                 //convertimos ese num de bites a una cadena
                 res = new String(b, 0,  numBytes, "utf-8");
+
+
+
+                //res = "NO EXISTE";
+                //res = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
 
                 Log.d("res", res);
 
@@ -212,7 +224,10 @@ public class Visitante extends AppCompatActivity {
         protected void onPostExecute(String res) {
             //super.onPostExecute(res);
             if ("NO EXISTE".equals(res)){
-                new RespuestaHabitante().mostrarRespuesta();
+               // new RespuestaHabitante().mostrarRespuesta();
+
+                Intent intent = new Intent(getApplicationContext(), RespuestaHabitante.class);
+                startActivity(intent);
 
             }
             else if (!"NO EXISTE".equals(res)){
