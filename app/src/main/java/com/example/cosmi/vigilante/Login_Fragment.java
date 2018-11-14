@@ -28,6 +28,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.regex.Matcher;
@@ -48,6 +56,8 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 	public Login_Fragment() {
 
 	}
+
+	protected String direction = "http://proyectomovilesvigilancia.hostingerapp.com/app/";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,10 +144,10 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.loginBtn:
 
-			Conectar conectar = new Conectar();
-			conectar.execute();
+			/*Conectar conectar = new Conectar();
+			conectar.execute();*/
 
-			//checkValidation();
+			checkValidation();
 			break;
 
 		case R.id.forgot_password:
@@ -188,15 +198,85 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 					"Your Email Id is Invalid.");
 		// Else do login and do your stuff
 		else {
-			Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(getContext(), Visitante.class);
-			startActivity(intent);
-
-
-
+			new inicio_sesion().execute(getEmailId,getPassword);
 		}
 
 	}
+
+	class inicio_sesion extends AsyncTask<String, Void, String> {
+		@Override
+		protected String doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
+			HttpURLConnection connection;
+
+			String EmailId    = parameter[0];
+			String Password   = parameter[1];
+
+			String direccion = direction+"sesion/inicio_sesion.php";
+
+			String res = null;
+
+			try {
+
+
+				connection = (HttpURLConnection) new URL(direccion).openConnection();
+				connection.setRequestMethod("POST");
+				connection.setDoInput(true);
+
+				/*********/
+
+				String params = "correo=" + EmailId + "&" + "contrasena=" + Password ;
+
+				OutputStream outputStream = connection.getOutputStream();
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+				writer.write(params);
+				//writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
+				writer.flush();
+				writer.close();
+				outputStream.close();
+
+				connection.connect();
+				InputStream is = (InputStream) connection.getContent();
+				byte [] b = new byte[100000];//buffer
+				Integer numBytes = is.read(b);// numero de bites que lleyó
+				//convertimos ese num de bites a una cadena
+				res = new String(b, 0,  numBytes, "utf-8");
+
+				Log.d("res", res);
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return res;
+		}
+
+		@Override
+		protected void onPostExecute(String res) {
+			super.onPostExecute(res);
+			if (!"NO EXISTE".equals(res))
+			{
+				Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(getContext(), Visitante.class);
+				startActivity(intent);
+			}
+			else
+			{
+
+			}
+
+		}
+	}
+
+
+
+
+
+
+
+
+
+
 
 
 
