@@ -1,5 +1,6 @@
 package com.example.cosmi.vigilante;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,15 +17,30 @@ public class RespuestaHabitante extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_respuesta_habitante);
 
+        Intent i = getIntent();
+        Bundle extras = i.getExtras();
+        if (extras != null) {
+
+            String res  = extras.getString("respuesta");
+            String text = "";
+            switch (res){
+                case "aceptado":
+                    text = "Lo conozco";
+                    break;
+                case "rechazado":
+                    text = "No lo conozco";
+                    break;
+                case "indispuesto":
+                    text = "No me encuentro en casa";
+                    break;
+            }
+
+            TextView respuesta = (TextView)findViewById(R.id.respuesta);
+            respuesta.setText(text);
+
+        }
+
     }
 
-    // Mostrar respuesta
-    protected void mostrarRespuesta() {
-        progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
-        textView = (TextView)findViewById(R.id.respuesta);
-        if (textView.getVisibility() == View.GONE) {
-            textView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-        }
-    }
+
 }

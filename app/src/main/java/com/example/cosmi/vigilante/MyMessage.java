@@ -67,16 +67,28 @@ public class MyMessage extends FirebaseMessagingService {
 
         //Bitmap bmp = textAsBitmap(data.get("body"), 180, Color.WHITE);
         Notification.Builder builder = new Notification.Builder(getApplicationContext());
-        builder.setContentTitle(data.get("title")+" "+numero);
+        builder.setContentTitle(data.get("title"));
         builder.setContentText(data.get("body"));
         builder.setSmallIcon(R.drawable.ic_warning_black_24dp);
         ///builder.setLargeIcon(bmp);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId("homeApps");
         }
-        Intent intent= new Intent(getApplicationContext(),  MainActivity.class);
+
+
+        Intent intent = new Intent(getApplicationContext(),  MainActivity.class);
+        if(data.get("title").equals("Visita")){
+            intent= new Intent(getApplicationContext(),  AvisoHabitante.class);
+            intent.putExtra("nombreVisita", data.get("nombre"));
+            intent.putExtra("appellVisita", data.get("apellido"));
+        }
+        else if(data.get("title").equals("Respuesta")){
+            intent= new Intent(getApplicationContext(),  RespuestaHabitante.class);
+            intent.putExtra("respuesta", data.get("body"));
+        }
+
         PendingIntent pendingIntent=PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"visita",pendingIntent));
+        builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
 
         notificationManager.notify(numero,  builder.build());
     }

@@ -38,6 +38,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class Visitante extends AppCompatActivity {
 
@@ -114,8 +115,6 @@ public class Visitante extends AppCompatActivity {
                     if(!"".equals(nameVisit)  && !"".equals(lastnameVisit) && !"".equals(nameHabit) && !"".equals(lastnameHabit) && !"".equals(mobiHabit) && !"".equals(calleHabi) && !"".equals(numHabi)) {
 
                         new DowloandInfo().execute(encode, nameVisit, lastnameVisit, nameHabit, lastnameHabit, mobiHabit, calleHabi, numHabi);
-                        //Intent intent = new Intent(getApplicationContext(), RespuestaHabitante.class);
-                        //startActivity(intent);
                         view.setEnabled(false);
                         ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
                         if (progressBar.getVisibility() == View.GONE) {
@@ -155,15 +154,26 @@ public class Visitante extends AppCompatActivity {
 
     }
 
-    class DowloandInfo extends AsyncTask<String, Void, String> {
+    public class Wrapper
+    {
+        String res;
+        String nameVisit;
+        String lastnameVisit;
+    }
+
+    class DowloandInfo extends AsyncTask<String, Void, Wrapper> {
+
+        String nameVisit     ;
+        String lastnameVisit ;
+
         @Override
-        protected String doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
+        protected Wrapper doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
             HttpURLConnection connection;
 
             String imagen           = parameter[0];
 
-            String nameVisit        = parameter[1];
-            String lastnameVisit    = parameter[2];
+            nameVisit               = parameter[1];
+            lastnameVisit           = parameter[2];
             String nameHabit        = parameter[3];
             String lastnameHabit    = parameter[4];
             String mobiHabit        = parameter[5];
@@ -174,6 +184,7 @@ public class Visitante extends AppCompatActivity {
             //String direccion = direction+"getimage.php";
 
             String res = null;
+            Wrapper w = new Wrapper();
 
             try {
 
@@ -185,16 +196,18 @@ public class Visitante extends AppCompatActivity {
 
                 /*********/
 
-                String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
+                //String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
 
-                Log.d("paramts", params);
+               // Log.d("paramts", params);
+
+                /*
 
 
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write(params);
-                //writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
+                //writer.write(params);
+                writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
                 writer.flush();
                 writer.close();
                 outputStream.close();
@@ -207,22 +220,31 @@ public class Visitante extends AppCompatActivity {
                 res = new String(b, 0,  numBytes, "utf-8");
 
 
-
+                */
                 //res = "NO EXISTE";
-                //res = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
+                res = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
 
+                //ross
+                //res = "e_wg0kAzWHY:APA91bHwoNHtc0GKvs402m9CIT8dhAz8O2CegJ1m3XwQVwjRR2f_sa-p6u3KAIWvmgFIAFhawq5hjSAuND-IbpoZxdNEY46IImien6TaJOjqeL5hXWwPHkvE5rmJ1tDj_EDckoaBdKBy";
                 Log.d("res", res);
+
+                w.res = res;
+                w.nameVisit = nameVisit;
+                w.lastnameVisit = lastnameVisit;
 
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return res;
+            //return res;
+            return w;
         }
 
         @Override
-        protected void onPostExecute(String res) {
+        protected void onPostExecute(Wrapper list) {
             //super.onPostExecute(res);
+
+            String res = list.res;
             if ("NO EXISTE".equals(res)){
                // new RespuestaHabitante().mostrarRespuesta();
 
@@ -233,7 +255,7 @@ public class Visitante extends AppCompatActivity {
             else if (!"NO EXISTE".equals(res)){
                 Log.e("onPostExecute", res);
                 //mandamos la notificación
-                new notificar().execute(res);
+                new notificar().execute(res, list.nameVisit, list.lastnameVisit);
 
             }
 
@@ -242,9 +264,11 @@ public class Visitante extends AppCompatActivity {
 
     class notificar extends AsyncTask <String, Void, Void>{
         @Override
-        protected Void doInBackground(String... token) {// método que no tiene acceso a la parte visual
+        protected Void doInBackground(String... resultado) {// método que no tiene acceso a la parte visual
             HttpURLConnection connection;
-            String TOKEN           = token[0];
+            String TOKEN             = resultado[0];
+            String nombreV           = resultado[1];
+            String appellV           = resultado[2];
 
             String direccion = direction+"notificar.php";
             try {
@@ -256,7 +280,7 @@ public class Visitante extends AppCompatActivity {
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write("token=" + TOKEN);
+                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV);
                 writer.flush();
                 writer.close();
                 outputStream.close();
