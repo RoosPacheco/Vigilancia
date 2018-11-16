@@ -1,12 +1,15 @@
 package com.example.cosmi.vigilante;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +26,8 @@ public class AvisoHabitante extends AppCompatActivity {
 
     protected String direction = "http://proyectomovilesvigilancia.hostingerapp.com/app/";
 
+    String tokenVig;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,10 +35,13 @@ public class AvisoHabitante extends AppCompatActivity {
 
         Intent i = getIntent();
         Bundle extras = i.getExtras();
+
         if (extras != null) {
 
             String nombre  = extras.getString("nombreVisita");
             String apellido  = extras.getString("appellVisita");
+            tokenVig  = extras.getString("tokenVig");
+            String urlImage  = extras.getString("imagen");
 
             TextView nombreT = (TextView)findViewById(R.id.fullNameVisit);
             TextView apelliT = (TextView)findViewById(R.id.lastNameVisit);
@@ -41,20 +49,23 @@ public class AvisoHabitante extends AppCompatActivity {
             nombreT.setText(nombre);
             apelliT.setText(apellido);
 
+            Log.d("tokenVig", tokenVig);
+            Log.d("URL", urlImage);
+            new DownloadImageTask().execute(urlImage);
+
         }
 
         Button aceptar      = (Button) findViewById(R.id.aceptado);
         Button rechazar     = (Button) findViewById(R.id.rechazado);
         Button indispuesto  = (Button) findViewById(R.id.indispuesto);
 
-        String token = "e_wg0kAzWHY:APA91bHwoNHtc0GKvs402m9CIT8dhAz8O2CegJ1m3XwQVwjRR2f_sa-p6u3KAIWvmgFIAFhawq5hjSAuND-IbpoZxdNEY46IImien6TaJOjqeL5hXWwPHkvE5rmJ1tDj_EDckoaBdKBy";
+        //String token = "e_wg0kAzWHY:APA91bHwoNHtc0GKvs402m9CIT8dhAz8O2CegJ1m3XwQVwjRR2f_sa-p6u3KAIWvmgFIAFhawq5hjSAuND-IbpoZxdNEY46IImien6TaJOjqeL5hXWwPHkvE5rmJ1tDj_EDckoaBdKBy";
 
         aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), token,Toast.LENGTH_LONG).show();
 
-                new notificar().execute(token,"aceptado");
+                new notificar().execute(tokenVig,"aceptado");
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
                 if (progressBar.getVisibility() == View.GONE) {
@@ -66,7 +77,7 @@ public class AvisoHabitante extends AppCompatActivity {
         rechazar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new notificar().execute(token,"rechazado");
+                new notificar().execute(tokenVig,"rechazado");
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
                 if (progressBar.getVisibility() == View.GONE) {
@@ -77,7 +88,7 @@ public class AvisoHabitante extends AppCompatActivity {
         indispuesto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new notificar().execute(token, "indispuesto");
+                new notificar().execute(tokenVig, "indispuesto");
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
                 if (progressBar.getVisibility() == View.GONE) {
@@ -128,6 +139,28 @@ public class AvisoHabitante extends AppCompatActivity {
         }
 
     }
+
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap bmp = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                bmp = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return bmp;
+        }
+        protected void onPostExecute(Bitmap result) {
+            ImageView bmImage = findViewById(R.id.imageVisit);
+            bmImage.setImageBitmap(result);
+        }
+    }
+
 }
 
 

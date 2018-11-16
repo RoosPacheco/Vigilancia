@@ -28,6 +28,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +67,8 @@ public class Visitante extends AppCompatActivity {
 
                 /**** Foto en alta resoluion****/
 
+                /*
+
                 File dir=getExternalFilesDir(Environment.DIRECTORY_DCIM);
                 file = new File(dir,"pic.jpg");
 
@@ -76,9 +85,11 @@ public class Visitante extends AppCompatActivity {
                     startActivityForResult(intent, 123);
                 }
 
+                */
+
                 /***FOto baja resolucion*/
-               /* Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 123);*/
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 123);
 
             }
         });
@@ -138,13 +149,13 @@ public class Visitante extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 123 && resultCode == Activity.RESULT_OK) {
             //Obtener el Bitmap de a captura alta resolucion
-            btm = BitmapFactory.decodeFile(file.getAbsolutePath());
+            //btm = BitmapFactory.decodeFile(file.getAbsolutePath());
 
-            /*
+
             //Obtenemos el Bitmap de la imagen de baja resolución
             Bundle bundle = data.getExtras();
             btm = (Bitmap) bundle.get("data");
-            */
+
 
             ImageView imageView = findViewById(R.id.imageVisit);
             imageView.setImageBitmap(btm);
@@ -159,6 +170,7 @@ public class Visitante extends AppCompatActivity {
         String res;
         String nameVisit;
         String lastnameVisit;
+        String urlImage;
     }
 
     class DowloandInfo extends AsyncTask<String, Void, Wrapper> {
@@ -181,10 +193,11 @@ public class Visitante extends AppCompatActivity {
             String numHabit         = parameter[7];
 
             String direccion = direction+"Visitantes/getInfoVisitante.php";
-            //String direccion = direction+"getimage.php";
 
             String res = null;
             Wrapper w = new Wrapper();
+
+            Log.d("IMAGEN", imagen);
 
             try {
 
@@ -195,54 +208,62 @@ public class Visitante extends AppCompatActivity {
                 connection.setDoInput(true);
 
                 /*********/
-
-                //String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
-
-               // Log.d("paramts", params);
-
-                /*
-
+                String params = "nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8");
+                //String params = "image=" + URLEncoder.encode(imagen, "UTF-8")+ "&" +"nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit;
+                Log.d("paramts", params);
 
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                //writer.write(params);
-                writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
+                writer.write("nameVisit=" + nameVisit + "&" + "lastnameVisit=" + lastnameVisit + "&" + "nameHabit=" + nameHabit + "&" + "lastnameHabit=" + lastnameHabit + "&" + "mobiHabit=" + mobiHabit + "&" + "calleHabi=" + calleHabi + "&" + "numHabit=" + numHabit + "&" + "image=" + URLEncoder.encode(imagen, "UTF-8"));
+                //writer.write("image=" + URLEncoder.encode(imagen, "UTF-8"));
                 writer.flush();
                 writer.close();
                 outputStream.close();
 
                 connection.connect();
+
+
                 InputStream is = (InputStream) connection.getContent();//error java.net.SocketException: sendto failed: EPIPE (Broken pipe)
                 byte [] b = new byte[100000];//buffer
                 Integer numBytes = is.read(b);// numero de bites que lleyó
                 //convertimos ese num de bites a una cadena
                 res = new String(b, 0,  numBytes, "utf-8");
 
+                Log.d("RES", res);
 
-                */
-                //res = "NO EXISTE";
-                res = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
+                JSONArray arr = new JSONArray(res);
+                String token = "";
+                String url = direction+"Visitantes/";
 
+                token = arr.getString(0);
+                url = url +arr.getString(1);
+
+                //token = "NO EXISTE";
+               // token = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
                 //ross
-                //res = "e_wg0kAzWHY:APA91bHwoNHtc0GKvs402m9CIT8dhAz8O2CegJ1m3XwQVwjRR2f_sa-p6u3KAIWvmgFIAFhawq5hjSAuND-IbpoZxdNEY46IImien6TaJOjqeL5hXWwPHkvE5rmJ1tDj_EDckoaBdKBy";
-                Log.d("res", res);
+                //token = "e_wg0kAzWHY:APA91bHwoNHtc0GKvs402m9CIT8dhAz8O2CegJ1m3XwQVwjRR2f_sa-p6u3KAIWvmgFIAFhawq5hjSAuND-IbpoZxdNEY46IImien6TaJOjqeL5hXWwPHkvE5rmJ1tDj_EDckoaBdKBy";
+                Log.d("res", token);
 
-                w.res = res;
+                w.res = token;
                 w.nameVisit = nameVisit;
                 w.lastnameVisit = lastnameVisit;
+                w.urlImage = url;
 
 
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            //return res;
             return w;
         }
 
         @Override
         protected void onPostExecute(Wrapper list) {
             //super.onPostExecute(res);
+
+
 
             String res = list.res;
             if ("NO EXISTE".equals(res)){
@@ -255,9 +276,10 @@ public class Visitante extends AppCompatActivity {
             else if (!"NO EXISTE".equals(res)){
                 Log.e("onPostExecute", res);
                 //mandamos la notificación
-                new notificar().execute(res, list.nameVisit, list.lastnameVisit);
+                new notificar().execute(res, list.nameVisit, list.lastnameVisit, list.urlImage);
 
             }
+
 
         }
     }
@@ -269,6 +291,10 @@ public class Visitante extends AppCompatActivity {
             String TOKEN             = resultado[0];
             String nombreV           = resultado[1];
             String appellV           = resultado[2];
+            String nameImagen           = resultado[3];
+
+            Log.d("FCMToken", "token "+ FirebaseInstanceId.getInstance().getToken());
+            String FCMToken = FirebaseInstanceId.getInstance().getToken();
 
             String direccion = direction+"notificar.php";
             try {
@@ -280,7 +306,7 @@ public class Visitante extends AppCompatActivity {
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV);
+                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV+"&"+"tokenVig="+FCMToken+"&"+"nameImagen="+nameImagen);
                 writer.flush();
                 writer.close();
                 outputStream.close();

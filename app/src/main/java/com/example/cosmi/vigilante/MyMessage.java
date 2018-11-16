@@ -81,6 +81,9 @@ public class MyMessage extends FirebaseMessagingService {
             intent= new Intent(getApplicationContext(),  AvisoHabitante.class);
             intent.putExtra("nombreVisita", data.get("nombre"));
             intent.putExtra("appellVisita", data.get("apellido"));
+            intent.putExtra("tokenVig", data.get("tokenVig"));
+            intent.putExtra("imagen", data.get("nameImage"));
+
         }
         else if(data.get("title").equals("Respuesta")){
             intent= new Intent(getApplicationContext(),  RespuestaHabitante.class);
