@@ -40,6 +40,26 @@ public class RespuestaHabitante extends AppCompatActivity {
 
         }
 
+        // On close icon click finish activity
+        findViewById(R.id.close_activity).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        finish();
+
+                    }
+                });
+        findViewById(R.id.ok).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        finish();
+
+                    }
+                });
+
     }
 
 

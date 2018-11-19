@@ -144,6 +144,17 @@ public class Visitante extends AppCompatActivity {
             }
         });
 
+
+        // On close icon click finish activity
+        findViewById(R.id.close_activity).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        finish();
+
+                    }
+                });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -171,6 +182,7 @@ public class Visitante extends AppCompatActivity {
         String nameVisit;
         String lastnameVisit;
         String urlImage;
+        String IDvisita;
     }
 
     class DowloandInfo extends AsyncTask<String, Void, Wrapper> {
@@ -234,10 +246,12 @@ public class Visitante extends AppCompatActivity {
 
                 JSONArray arr = new JSONArray(res);
                 String token = "";
+                String idVisita = "";
                 String url = direction+"Visitantes/";
 
                 token = arr.getString(0);
                 url = url +arr.getString(1);
+                idVisita = arr.getString(2);
 
                 //token = "NO EXISTE";
                // token = "fopMfZ4rK6s:APA91bG56WSonYtFvLVqftuhVeAiM1JrJlaDF5DqJ9d_BkCxrTvu348aPAFDi4w07_4ArnVFyuWvLr_JpjU0vAzlGjMhuFmJdnsNF67VkaJuYCjPzt_wIMeDHgad2uin0QleX6SmWVn3";
@@ -249,6 +263,7 @@ public class Visitante extends AppCompatActivity {
                 w.nameVisit = nameVisit;
                 w.lastnameVisit = lastnameVisit;
                 w.urlImage = url;
+                w.IDvisita = idVisita;
 
 
             } catch (IOException e) {
@@ -276,7 +291,7 @@ public class Visitante extends AppCompatActivity {
             else if (!"NO EXISTE".equals(res)){
                 Log.e("onPostExecute", res);
                 //mandamos la notificación
-                new notificar().execute(res, list.nameVisit, list.lastnameVisit, list.urlImage);
+                new notificar().execute(res, list.nameVisit, list.lastnameVisit, list.urlImage, list.IDvisita);
 
             }
 
@@ -291,7 +306,8 @@ public class Visitante extends AppCompatActivity {
             String TOKEN             = resultado[0];
             String nombreV           = resultado[1];
             String appellV           = resultado[2];
-            String nameImagen           = resultado[3];
+            String nameImagen        = resultado[3];
+            String idVisita          = resultado[4];
 
             Log.d("FCMToken", "token "+ FirebaseInstanceId.getInstance().getToken());
             String FCMToken = FirebaseInstanceId.getInstance().getToken();
@@ -306,7 +322,7 @@ public class Visitante extends AppCompatActivity {
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV+"&"+"tokenVig="+FCMToken+"&"+"nameImagen="+nameImagen);
+                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV+"&"+"tokenVig="+FCMToken+"&"+"nameImagen="+nameImagen+"&"+"idVisita="+idVisita);
                 writer.flush();
                 writer.close();
                 outputStream.close();

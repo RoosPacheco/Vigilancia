@@ -31,4 +31,7 @@
     <string name="calle">Calle</string>
     <string name="num">Número</string>
 
+    <string name="dialog_message">Welcome to Alert Dialog</string>
+    <string name="dialog_title">Javatpoint Alert Dialog</string>
+
 </resources>

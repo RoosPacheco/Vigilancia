@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -15,7 +16,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(getApplicationContext(), ActivityloginRegister.class);
+
+        Intent i = getIntent();
+        Bundle extras = i.getExtras();
+        if (extras == null) {
+            Intent intent = new Intent(getApplicationContext(), ActivityloginRegister.class);
+            startActivity(intent);
+
+        }
+
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MainActivity.this, new OnSuccessListener<InstanceIdResult>() {
             @Override
@@ -25,7 +34,18 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        startActivity(intent);
+
+
+        // On close icon click finish activity
+        findViewById(R.id.close_activity).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View arg0) {
+                        finish();
+
+                    }
+                });
 
 
     }

@@ -27,6 +27,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_below="@+id/close_activity" />
+
     </RelativeLayout>
 
 </ScrollView>
