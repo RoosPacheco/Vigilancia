@@ -254,14 +254,31 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 		@Override
 		protected void onPostExecute(String res) {
 			super.onPostExecute(res);
-			if (!"NO EXISTE".equals(res))
+			if (res.equals("HABITANTE FAIL") || res.equals("VIGILANTE FAIL"))
 			{
-				Toast.makeText(getActivity(), "Do Login.", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(getActivity(), "Invalido.", Toast.LENGTH_SHORT).show();
+				loginLayout.startAnimation(shakeAnimation);
+				new CustomToast().Show_Toast(getActivity(), view,
+						"Usuario o contraseña inválido");
+			}
+			else if (res.equals("HABITANTE OK"))
+			{
+				Intent intent = new Intent(getContext(), MainActivity.class);
+				intent.putExtra("op","main");
+				startActivity(intent);
+
+			}
+			else if (res.equals("VIGILANTE OK"))
+			{
 				Intent intent = new Intent(getContext(), Visitante.class);
 				startActivity(intent);
+
 			}
-			else
+			else if (res.equals("DESCONOCIDO"))
 			{
+				loginLayout.startAnimation(shakeAnimation);
+				new CustomToast().Show_Toast(getActivity(), view,
+						"Usuario no registrado");
 
 			}
 
