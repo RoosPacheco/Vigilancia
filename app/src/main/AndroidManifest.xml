@@ -43,7 +43,12 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".RespuestaHabitante" />
+        <activity android:name=".RespuestaHabitante"
+            android:parentActivityName=".Visitante">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Visitante" />
+        </activity>
         <activity android:name=".AvisoHabitante"></activity>
     </application>
 

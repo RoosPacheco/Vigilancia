@@ -189,6 +189,8 @@ public class Visitante extends AppCompatActivity {
 
         String nameVisit     ;
         String lastnameVisit ;
+        String nameHabit;
+        String lastnameHabit;
 
         @Override
         protected Wrapper doInBackground(String... parameter) {// método que no tiene acceso a la parte visual
@@ -198,8 +200,8 @@ public class Visitante extends AppCompatActivity {
 
             nameVisit               = parameter[1];
             lastnameVisit           = parameter[2];
-            String nameHabit        = parameter[3];
-            String lastnameHabit    = parameter[4];
+            nameHabit               = parameter[3];
+            lastnameHabit           = parameter[4];
             String mobiHabit        = parameter[5];
             String calleHabi        = parameter[6];
             String numHabit         = parameter[7];
@@ -291,7 +293,7 @@ public class Visitante extends AppCompatActivity {
             else if (!"NO EXISTE".equals(res)){
                 Log.e("onPostExecute", res);
                 //mandamos la notificación
-                new notificar().execute(res, list.nameVisit, list.lastnameVisit, list.urlImage, list.IDvisita);
+                new notificar().execute(res, list.nameVisit, list.lastnameVisit, list.urlImage, list.IDvisita, nameHabit+" "+lastnameHabit);
 
             }
 
@@ -308,6 +310,7 @@ public class Visitante extends AppCompatActivity {
             String appellV           = resultado[2];
             String nameImagen        = resultado[3];
             String idVisita          = resultado[4];
+            String nameHabit         = resultado[5];
 
             Log.d("FCMToken", "token "+ FirebaseInstanceId.getInstance().getToken());
             String FCMToken = FirebaseInstanceId.getInstance().getToken();
@@ -322,7 +325,7 @@ public class Visitante extends AppCompatActivity {
                 OutputStream outputStream = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV+"&"+"tokenVig="+FCMToken+"&"+"nameImagen="+nameImagen+"&"+"idVisita="+idVisita);
+                writer.write("token=" + TOKEN +"&"+"nameVisit="+nombreV+"&"+"lastNamVi="+appellV+"&"+"tokenVig="+FCMToken+"&"+"nameImagen="+nameImagen+"&"+"idVisita="+idVisita+"&"+"nameHabit="+nameHabit);
                 writer.flush();
                 writer.close();
                 outputStream.close();

@@ -1,5 +1,7 @@
 package com.example.cosmi.vigilante;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,6 +32,7 @@ public class AvisoHabitante extends AppCompatActivity {
 
     String tokenVig;
     String idVisita;
+    String nameHabit;
     AlertDialog.Builder builder;
 
     @Override
@@ -41,12 +44,18 @@ public class AvisoHabitante extends AppCompatActivity {
         Bundle extras = i.getExtras();
 
         if (extras != null) {
+            NotificationManager nm;
+            String ns = Context.NOTIFICATION_SERVICE;
+            nm = (NotificationManager) getSystemService(ns);
+            int numNotifi = extras.getInt("numNotifi");
+            nm.cancel(numNotifi);
 
             String nombre  = extras.getString("nombreVisita");
             String apellido  = extras.getString("appellVisita");
             tokenVig  = extras.getString("tokenVig");
             String urlImage  = extras.getString("imagen");
             idVisita  = extras.getString("idVisita");
+            nameHabit = extras.getString("nameHabit");
 
             TextView nombreT = (TextView)findViewById(R.id.fullNameVisit);
             TextView apelliT = (TextView)findViewById(R.id.lastNameVisit);
@@ -70,7 +79,7 @@ public class AvisoHabitante extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                new notificar().execute(tokenVig,"aceptado");
+                new notificar().execute(tokenVig,"aceptado", nameHabit);
                 new actualizarVisita().execute("aceptado", idVisita);
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
@@ -83,7 +92,7 @@ public class AvisoHabitante extends AppCompatActivity {
         rechazar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new notificar().execute(tokenVig, "rechazado");
+                new notificar().execute(tokenVig, "rechazado", nameHabit);
                 new actualizarVisita().execute("rechazado", idVisita);
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
@@ -95,7 +104,7 @@ public class AvisoHabitante extends AppCompatActivity {
         indispuesto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new notificar().execute(tokenVig, "indispuesto");
+                new notificar().execute(tokenVig, "indispuesto", nameHabit);
                 new actualizarVisita().execute("indispuesto", idVisita);
                 view.setEnabled(false);
                 ProgressBar progressBar = (ProgressBar) findViewById(R.id.loading_spinner);
@@ -117,6 +126,7 @@ public class AvisoHabitante extends AppCompatActivity {
             HttpURLConnection connection;
             String TOKEN        = resultado[0];
             String respuesta    = resultado[1];
+            String nameHabit    = resultado[2];
 
             String res = null;
 
@@ -131,7 +141,7 @@ public class AvisoHabitante extends AppCompatActivity {
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
                 Log.d("token",TOKEN);
-                writer.write("token="+TOKEN +"&"+"respuesta=" + respuesta);
+                writer.write("token="+TOKEN +"&"+"respuesta=" + respuesta+ "&"+"nameHabit=" + nameHabit);
                 writer.flush();
                 writer.close();
                 outputStream.close();

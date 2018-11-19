@@ -11,6 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.AudioAttributes;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,6 +54,8 @@ public class MyMessage extends FirebaseMessagingService {
         Log.d("title", data.get("title"));
         Log.d("body", data.get("body"));
 
+
+
         int numero = (int) (Math.random() * 100) + 1;
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel notificationChannel = null;
@@ -61,15 +65,29 @@ public class MyMessage extends FirebaseMessagingService {
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.enableVibration(true);
+
+            Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+            AudioAttributes att = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            notificationChannel.setSound(soundUri,att );
+
+
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             notificationManager.createNotificationChannel(notificationChannel);
         }
 
         //Bitmap bmp = textAsBitmap(data.get("body"), 180, Color.WHITE);
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Notification.Builder builder = new Notification.Builder(getApplicationContext());
+        builder.setSound(alarmSound);
         builder.setContentTitle(data.get("title"));
         builder.setContentText(data.get("body"));
         builder.setSmallIcon(R.drawable.ic_warning_black_24dp);
+
+        builder.setAutoCancel(true);
+
+
         ///builder.setLargeIcon(bmp);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setChannelId("homeApps");
@@ -85,10 +103,15 @@ public class MyMessage extends FirebaseMessagingService {
             intent.putExtra("imagen", data.get("nameImage"));
             intent.putExtra("idVisita", data.get("idVisita"));
 
+            intent.putExtra("numNotifi", numero);
+            intent.putExtra("nameHabit", data.get("nameHabit"));
+
         }
         else if(data.get("title").equals("Respuesta")){
             intent= new Intent(getApplicationContext(),  RespuestaHabitante.class);
             intent.putExtra("respuesta", data.get("body"));
+            intent.putExtra("nameHabit", data.get("nameHabit"));
+            intent.putExtra("numNotifi", numero);
         }
 
         PendingIntent pendingIntent=PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);

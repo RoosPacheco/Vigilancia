@@ -242,7 +242,7 @@ public class Login_Fragment extends Fragment implements OnClickListener {
 				//convertimos ese num de bites a una cadena
 				res = new String(b, 0,  numBytes, "utf-8");
 
-				Log.d("res", res);
+				Log.d("resss", res);
 
 
 			} catch (IOException e) {

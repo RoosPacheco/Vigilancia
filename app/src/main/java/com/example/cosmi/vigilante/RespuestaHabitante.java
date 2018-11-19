@@ -1,5 +1,7 @@
 package com.example.cosmi.vigilante;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,8 +22,15 @@ public class RespuestaHabitante extends AppCompatActivity {
         Intent i = getIntent();
         Bundle extras = i.getExtras();
         if (extras != null) {
+            NotificationManager nm;
+            String ns = Context.NOTIFICATION_SERVICE;
+            nm = (NotificationManager) getSystemService(ns);
+            int numNotifi = extras.getInt("numNotifi");
+            nm.cancel(numNotifi);
+
 
             String res  = extras.getString("respuesta");
+            String nameHabit = extras.getString("nameHabit");
             String text = "";
             switch (res){
                 case "aceptado":
@@ -36,7 +45,9 @@ public class RespuestaHabitante extends AppCompatActivity {
             }
 
             TextView respuesta = (TextView)findViewById(R.id.respuesta);
+            TextView habitante = (TextView)findViewById(R.id.nameHabit);
             respuesta.setText(text);
+            habitante.setText("Respuesta de: "+nameHabit);
 
         }
 
