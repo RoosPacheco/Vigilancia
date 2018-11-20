@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -85,6 +86,7 @@ public class MyMessage extends FirebaseMessagingService {
         builder.setContentText(data.get("body"));
         builder.setSmallIcon(R.drawable.ic_warning_black_24dp);
 
+
         builder.setAutoCancel(true);
 
 
@@ -106,6 +108,9 @@ public class MyMessage extends FirebaseMessagingService {
             intent.putExtra("numNotifi", numero);
             intent.putExtra("nameHabit", data.get("nameHabit"));
 
+
+            Bitmap imageVisit = getBitmapFromURL(data.get("nameImage"));
+            builder.setLargeIcon(imageVisit);
         }
         else if(data.get("title").equals("Respuesta")){
             intent= new Intent(getApplicationContext(),  RespuestaHabitante.class);
@@ -114,14 +119,34 @@ public class MyMessage extends FirebaseMessagingService {
             intent.putExtra("numNotifi", numero);
         }
 
-        PendingIntent pendingIntent=PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent2 = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent3 = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
         builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
+        builder.addAction(R.drawable.ic_like, "ACEPTADO", pendingIntent2);
+        builder.addAction(R.drawable.ic_like, "DENEGADO", pendingIntent3);
+        builder.addAction(R.drawable.ic_like, "NO ESTOY", pendingIntent3);
 
         notificationManager.notify(numero,  builder.build());
     }
 
 
 
+    public static Bitmap getBitmapFromURL(String src) {
+        try {
+            URL url = new URL(src);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            // Log exception
+            return null;
+        }
+    }
 
 
 
