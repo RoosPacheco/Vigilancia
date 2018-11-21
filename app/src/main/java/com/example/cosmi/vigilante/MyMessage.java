@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -97,8 +98,16 @@ public class MyMessage extends FirebaseMessagingService {
 
 
         Intent intent = new Intent(getApplicationContext(),  MainActivity.class);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);;
+
+        Intent notificationService = new Intent(getApplicationContext(),  serviceNotification.class);
+        Intent notificationService2 = new Intent(getApplicationContext(),  serviceNotification2.class);
+
         if(data.get("title").equals("Visita")){
+
             intent= new Intent(getApplicationContext(),  AvisoHabitante.class);
+
             intent.putExtra("nombreVisita", data.get("nombre"));
             intent.putExtra("appellVisita", data.get("apellido"));
             intent.putExtra("tokenVig", data.get("tokenVig"));
@@ -108,25 +117,50 @@ public class MyMessage extends FirebaseMessagingService {
             intent.putExtra("numNotifi", numero);
             intent.putExtra("nameHabit", data.get("nameHabit"));
 
-
             Bitmap imageVisit = getBitmapFromURL(data.get("nameImage"));
             builder.setLargeIcon(imageVisit);
+            builder.setStyle(new Notification.BigPictureStyle()
+                    .bigPicture(imageVisit));
+
+
+
+            notificationService.putExtra("tokenVig", data.get("tokenVig"));
+            notificationService.putExtra("nameHabit", data.get("nameHabit"));
+            notificationService.putExtra("idVisita", data.get("idVisita"));
+            notificationService.putExtra("numNotifi", numero);
+
+            notificationService2.putExtra("tokenVig", data.get("tokenVig"));
+            notificationService2.putExtra("nameHabit", data.get("nameHabit"));
+            notificationService2.putExtra("idVisita", data.get("idVisita"));
+            notificationService2.putExtra("numNotifi", numero);
+
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntentN2 = PendingIntent.getService(getApplicationContext(), 0, notificationService, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntentN3 = PendingIntent.getService(getApplicationContext(), 0, notificationService2,PendingIntent.FLAG_UPDATE_CURRENT);
+
+            builder.addAction(R.drawable.ic_like, "ACEPTADO", pendingIntentN2);
+            builder.addAction(R.drawable.ic_like, "DENEGADO", pendingIntentN3);
         }
         else if(data.get("title").equals("Respuesta")){
             intent= new Intent(getApplicationContext(),  RespuestaHabitante.class);
+
             intent.putExtra("respuesta", data.get("body"));
             intent.putExtra("nameHabit", data.get("nameHabit"));
             intent.putExtra("numNotifi", numero);
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+            builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
         }
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent pendingIntent2 = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        PendingIntent pendingIntent3 = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
 
-        builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
-        builder.addAction(R.drawable.ic_like, "ACEPTADO", pendingIntent2);
-        builder.addAction(R.drawable.ic_like, "DENEGADO", pendingIntent3);
-        builder.addAction(R.drawable.ic_like, "NO ESTOY", pendingIntent3);
+
+        //builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
+
+
+
+
 
         notificationManager.notify(numero,  builder.build());
     }

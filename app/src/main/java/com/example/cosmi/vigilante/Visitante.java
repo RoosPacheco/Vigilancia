@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -52,14 +54,18 @@ public class Visitante extends AppCompatActivity {
     protected String direction = "http://proyectomovilesvigilancia.hostingerapp.com/app/";
     File file;
     private Bitmap btm;
+    AlertDialog.Builder builder;
 
     private Boolean ban = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visitante);
 
+        builder  = new AlertDialog.Builder(this);
         ImageView picture = (ImageView) findViewById(R.id.imageVisit);
         picture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,9 +307,9 @@ public class Visitante extends AppCompatActivity {
         }
     }
 
-    class notificar extends AsyncTask <String, Void, Void>{
+    class notificar extends AsyncTask <String, Void, String>{
         @Override
-        protected Void doInBackground(String... resultado) {// método que no tiene acceso a la parte visual
+        protected String doInBackground(String... resultado) {// método que no tiene acceso a la parte visual
             HttpURLConnection connection;
             String TOKEN             = resultado[0];
             String nombreV           = resultado[1];
@@ -314,6 +320,8 @@ public class Visitante extends AppCompatActivity {
 
             Log.d("FCMToken", "token "+ FirebaseInstanceId.getInstance().getToken());
             String FCMToken = FirebaseInstanceId.getInstance().getToken();
+
+            String res = null;
 
             String direccion = direction+"notificar.php";
             try {
@@ -336,15 +344,40 @@ public class Visitante extends AppCompatActivity {
                 byte [] b = new byte[100000];//buffer
                 Integer numBytes = is.read(b);// numero de bites que leyó
                 //convertimos ese num de bites a una cadena
-                String res = new String(b, 0,  numBytes, "utf-8");
+                res = new String(b, 0,  numBytes, "utf-8");
                 Log.d("respuestaNotifi", res);
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return null;
+            return res;
         }
 
+        protected void onPostExecute(String result) {
+            if (result != null){
+                alert();
+            }
+        }
+
+    }
+
+    private void alert(){
+        builder.setMessage(R.string.dialog_message) .setTitle(R.string.dialog_title);
+        //Setting message manually and performing action on button click
+        builder.setMessage("La notificación fué enviadá, Gracias")
+                .setCancelable(false)
+                .setPositiveButton("Cerrar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //reload actovity
+                        finish();
+                        startActivity(getIntent());
+                    }
+                });
+        //Creating dialog box
+        AlertDialog alert = builder.create();
+        //Setting the title manually
+        alert.setTitle("Mensaje");
+        alert.show();
     }
 
 }
