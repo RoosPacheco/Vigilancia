@@ -147,21 +147,11 @@ public class MyMessage extends FirebaseMessagingService {
             intent.putExtra("respuesta", data.get("body"));
             intent.putExtra("nameHabit", data.get("nameHabit"));
             intent.putExtra("numNotifi", numero);
-            pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-
+            pendingIntent = PendingIntent.getActivity(getApplicationContext(),numero,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 
             builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
         }
-
         builder.setContentIntent(pendingIntent);
-
-
-        //builder.addAction(new Notification.Action(R.drawable.ic_warning_black_24dp,"Abrir",pendingIntent));
-
-
-
-
-
         notificationManager.notify(numero,  builder.build());
     }
 
