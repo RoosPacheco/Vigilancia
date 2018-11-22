@@ -135,8 +135,8 @@ public class MyMessage extends FirebaseMessagingService {
             notificationService2.putExtra("numNotifi", numero);
 
             pendingIntent = PendingIntent.getActivity(getApplicationContext(),1,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent pendingIntentN2 = PendingIntent.getService(getApplicationContext(), 0, notificationService, PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent pendingIntentN3 = PendingIntent.getService(getApplicationContext(), 0, notificationService2,PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntentN2 = PendingIntent.getService(getApplicationContext(), numero, notificationService, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntentN3 = PendingIntent.getService(getApplicationContext(), numero, notificationService2,PendingIntent.FLAG_UPDATE_CURRENT);
 
             builder.addAction(R.drawable.ic_like, "ACEPTADO", pendingIntentN2);
             builder.addAction(R.drawable.ic_like, "DENEGADO", pendingIntentN3);
